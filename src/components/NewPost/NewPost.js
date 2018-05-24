@@ -17,6 +17,7 @@ class NewPost extends Component {
           author: this.state.author,
         };
 
+        // See index.js for setting default base URLs
         axios.post('https://jsonplaceholder.typicode.com/posts', data)
           .then(response => {
             console.log(response);
