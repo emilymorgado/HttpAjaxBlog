@@ -41,13 +41,12 @@ class Posts extends Component {
     if (!this.state.error) {
       posts = this.state.posts.map(post => {
       return (
-        <Link to={'/' + post.id}>
+        <Link to={'/' + post.id} key={post.id}>
           <Post
-              key={post.id}
               title={post.title}
               author={post.author}
               // {...this.props} this passes along all the props
-              clicked={() => this.postSelectedHandler(post.id)} />;
+              clicked={() => this.postSelectedHandler(post.id)} />
           </Link>
         );
         });

@@ -11,10 +11,15 @@ class FullPost extends Component {
 // Updating state in componentDidUpdate will create an infinite loop
 // The component will update, which will trigger componentDidUpdate
 // For this reason, we add the if (this.state.loadedPost) condition
-    componentDidUpdate () {
-        if (this.props.id){
+
+// This changed to componentDidMount when we implemented routing
+// It is now being added and removed from the DOM
+    componentDidMount () {
+      console.log("HI", this.props.match.params.id)
+
+        if (this.props.match.params.id){
           if (!this.state.loadedPost || (this.state.loadedPost && this.state.loadedPost.id !== this.props.id)) {
-            axios.get('https://jsonplaceholder.typicode.com/posts/' + this.props.id)
+            axios.get('https://jsonplaceholder.typicode.com/posts/' + this.props.match.params.id)
               .then(response => {
                 // console.log(response);
                   this.setState({loadedPost: response.data});
