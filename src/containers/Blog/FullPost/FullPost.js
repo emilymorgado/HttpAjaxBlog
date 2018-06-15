@@ -14,23 +14,36 @@ class FullPost extends Component {
 
 // This changed to componentDidMount when we implemented routing
 // It is now being added and removed from the DOM
+
+// This isn't getting re-executed on post change
+// So we need to implement componentDidUpdate and loadData
     componentDidMount () {
-      console.log("HI", this.props.match.params.id)
+      this.loadData();
+    }
 
-        if (this.props.match.params.id){
-          if (!this.state.loadedPost || (this.state.loadedPost && this.state.loadedPost.id !== this.props.id)) {
-            axios.get('https://jsonplaceholder.typicode.com/posts/' + this.props.match.params.id)
-              .then(response => {
-                // console.log(response);
-                  this.setState({loadedPost: response.data});
-              })
-          }
+    componentDidUpdate () {
+      this.loadData();
+    }
 
+    loadData () {
+      if (this.props.match.params.id){
+        // Keep in mind, we are retrieving the id from the route
+        // Which is why we do the match.params
+        // We've first removed the strict equality because one id is a string, and the other a number
+        // Then we converted the string into a number, by putting a + in front of it
+        if (!this.state.loadedPost || (this.state.loadedPost && this.state.loadedPost.id !== +this.props.match.params.id)) {
+          axios.get('https://jsonplaceholder.typicode.com/posts/' + this.props.match.params.id)
+            .then(response => {
+              // console.log(response);
+              this.setState({loadedPost: response.data});
+            })
         }
+
+      }
     }
 
     deletePostHandler = () => {
-        axios.delete('https://jsonplaceholder.typicode.com/posts/'  + this.props.id)
+        axios.delete('https://jsonplaceholder.typicode.com/posts/'  + this.props.match.params.id)
           .then(response => {
             console.log(response);
           })
@@ -39,7 +52,7 @@ class FullPost extends Component {
     render () {
       let post = <p style={{textAlign: 'center'}}>Please select a Post!</p>;
 
-      if (this.props.id) {
+      if (this.props.match.params.id) {
           post = <p style={{textAlign: 'center'}}>Loading...</p>;
       }
       if (this.state.loadedPost) {

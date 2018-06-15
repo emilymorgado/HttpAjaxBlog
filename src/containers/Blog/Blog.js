@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
-import { Route, NavLink, Switch } from 'react-router-dom';
+import { Route, NavLink, Switch, Redirect } from 'react-router-dom';
 
-import Posts from './Posts/Posts';
-import NewPost from './NewPost/NewPost';
-import FullPost from './FullPost/FullPost';
 import './Blog.css';
+import Posts from './Posts/Posts';
+import asyncComponent from '../../hoc/asyncComponent';
+// import NewPost from './NewPost/NewPost';
+// We no longer want this fully loaded, we're replacing it with asyncComponent
+
+const AsyncNewPost = asyncComponent(() => {
+  // dynamic import, will replace NewPost in <Route>
+  return import('./NewPost/NewPost');
+});
 
 class Blog extends Component {
+  state = {
+    auth: true,
+  }
+
   render () {
     return (
       <div className='Blog'>
@@ -14,13 +24,13 @@ class Blog extends Component {
           <nav>
             <ul>
               <li><NavLink
-                to='/'
+                to='/posts'
                 exact
                 activeClassName='my-active'
                 activeStyle={{
                   color: '#fa923f',
                   textDecoration: 'underline'
-                }}>Home</NavLink></li>
+                }}>Home/Posts</NavLink></li>
               {/* <li><NavLink to='/new-post'>New Post</NavLink></li> */}
               {/* Cool things you can do with Link!  */}
                 <li><NavLink to={{
@@ -38,11 +48,15 @@ class Blog extends Component {
         <Route path='/' exact render={() => <h1>Home</h1>} />
         <Route path='/' render={() => <h1>Home 2</h1>} />
         <Route path='/posts/:id' exact component={FullPost} />
-        Use Switch when you only want one route loaded at a time */}
+        Use Switch when you only want one route loaded at a time
+        The ternary condition checks whether or not a user is allowed to access a page
+        Code Splitting && Lazy Loading is loading only what you need, nothing more */}
         <Switch>
-          <Route path='/' exact component={Posts} />
-          <Route path='/new-post' component={NewPost} />
-          <Route path='/:id' exact component={FullPost} />
+          {this.state.auth ? <Route path='/new-post' component={AsyncNewPost} /> : null}
+          <Route path='/posts' component={Posts} />
+          <Route render={() => <h1>Route Not Found</h1>} />
+          {/* <Redirect from='/' to='/posts' /> */}
+          {/* <Route path='/' component={Posts} />  // This is a alertative to Redirect*/}
         </Switch>
       </div>
       );
